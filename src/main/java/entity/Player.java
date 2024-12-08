@@ -36,21 +36,21 @@ public class Player extends Entity
     {
         try
         {
-            upImage1 = ImageIO.read(new File("src\\main\\resources\\Isaac_back_1.png"));
-            upImage2 = ImageIO.read(new File("src\\main\\resources\\Isaac_back_2.png"));
-            upImage3 = ImageIO.read(new File("src\\main\\resources\\Isaac_back_3.png"));
+            upImage1 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_back_1.png"));
+            upImage2 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_back_2.png"));
+            upImage3 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_back_3.png"));
 
-            leftImage1 = ImageIO.read(new File("src\\main\\resources\\Isaac_left_1.png"));
-            leftImage2 = ImageIO.read(new File("src\\main\\resources\\Isaac_left_2.png"));
-            leftImage3 = ImageIO.read(new File("src\\main\\resources\\Isaac_left_3.png"));
+            leftImage1 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_left_1.png"));
+            leftImage2 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_left_2.png"));
+            leftImage3 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_left_3.png"));
 
-            downImage1 = ImageIO.read(new File("src\\main\\resources\\Isaac_front_1.png"));
-            downImage2 = ImageIO.read(new File("src\\main\\resources\\Isaac_front_2.png"));
-            downImage3 = ImageIO.read(new File("src\\main\\resources\\Isaac_front_3.png"));
+            downImage1 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_front_1.png"));
+            downImage2 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_front_2.png"));
+            downImage3 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_front_3.png"));
 
-            rightImage1 = ImageIO.read(new File("src\\main\\resources\\Isaac_right_1.png"));
-            rightImage2 = ImageIO.read(new File("src\\main\\resources\\Isaac_right_2.png"));
-            rightImage3 = ImageIO.read(new File("src\\main\\resources\\Isaac_right_3.png"));
+            rightImage1 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_right_1.png"));
+            rightImage2 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_right_2.png"));
+            rightImage3 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_right_3.png"));
         }
         catch(IOException e)
         {

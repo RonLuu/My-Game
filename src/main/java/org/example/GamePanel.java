@@ -1,9 +1,11 @@
 package org.example;
 
 import entity.Player;
+import tile.LevelManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.FileNotFoundException;
 
 public class GamePanel extends JPanel implements Runnable
 {
@@ -12,19 +14,20 @@ public class GamePanel extends JPanel implements Runnable
     final int scale = 3;
 
     public final int tileSize = originalTileSize * scale; // 48x48 pixels
-    final int maxScreenCol = 16; // 16 vertical tile
-    final int maxScreenRow = 12; // 12 row tile
+    public final int maxScreenCol = 16; // 16 vertical tile
+    public final int maxScreenRow = 12; // 12 row tile
     final int screenWidth = maxScreenCol * tileSize; //  48 * 16 = 768 pixels
     final int screenHeight = maxScreenRow * tileSize; // 48 * 12 = 576 pixels
 
     final KeyHandler keyHandler = new KeyHandler();
     Thread gameThread;
     Player player = new Player(this, this.keyHandler);
+    LevelManager levelManager = new LevelManager(this);
 
     // FPS
     final int FPS = 60;
 
-    public GamePanel()
+    public GamePanel() throws FileNotFoundException
     {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.BLACK);
@@ -44,70 +47,70 @@ public class GamePanel extends JPanel implements Runnable
     // The idea is after the program finishes drawing
     // it has to wait until the next time to draw
     // in order to maintain 60 FPS
-    @Override
-    public void run()
-    {
-        // The interval between each draw
-        double drawFrameInterval = (double) 1_000_000_000/FPS;
-
-        // The next time to draw is the current time added the drawing interval
-        double nextDrawTime = System.nanoTime() + drawFrameInterval;
-
-        while(gameThread != null)
-        {
-            // 1. Update: update the character's information
-            update();
-
-            // 2. Redraw: redraw the character's position
-            repaint();
-
-            // Now wait until next draw
-            try
-            {
-                double remainingTime = nextDrawTime - System.nanoTime();
-                remainingTime /= 1_000_000; // Convert to millisecond
-                Thread.sleep((long) remainingTime);
-
-                nextDrawTime += drawFrameInterval;
-
-            }
-            catch (InterruptedException e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    // A function to update the game in 60 frames per second
-    // First method: delta
 //    @Override
 //    public void run()
 //    {
-//        double drawFrameInterval = 1_000_000_000/FPS;
-//        double delta = 0;
-//        long lastTime = System.nanoTime();
-//        long currentTime;
+//        // The interval between each draw
+//        double drawFrameInterval = (double) 1_000_000_000/FPS;
+//
+//        // The next time to draw is the current time added the drawing interval
+//        double nextDrawTime = System.nanoTime() + drawFrameInterval;
 //
 //        while(gameThread != null)
 //        {
-//            currentTime = System.nanoTime();
+//            // 1. Update: update the character's information
+//            update();
 //
-//            delta = delta + (currentTime - lastTime)/drawFrameInterval;
+//            // 2. Redraw: redraw the character's position
+//            repaint();
 //
-//            lastTime = currentTime;
-//
-//            if(delta >= 1)
+//            // Now wait until next draw
+//            try
 //            {
-//                // 1. Update: update the character's information
-//                update();
+//                double remainingTime = nextDrawTime - System.nanoTime();
+//                remainingTime /= 1_000_000; // Convert to millisecond
+//                Thread.sleep((long) remainingTime);
 //
-//                // 2. Redraw: redraw the character's position
-//                repaint();
+//                nextDrawTime += drawFrameInterval;
 //
-//                delta--;
+//            }
+//            catch (InterruptedException e)
+//            {
+//                throw new RuntimeException(e);
 //            }
 //        }
 //    }
+
+    // A function to update the game in 60 frames per second
+    // First method: delta
+    @Override
+    public void run()
+    {
+        double drawFrameInterval = 1_000_000_000/FPS;
+        double delta = 0;
+        long lastTime = System.nanoTime();
+        long currentTime;
+
+        while(gameThread != null)
+        {
+            currentTime = System.nanoTime();
+
+            delta = delta + (currentTime - lastTime)/drawFrameInterval;
+
+            lastTime = currentTime;
+
+            if(delta >= 1)
+            {
+                // 1. Update: update the character's information
+                update();
+
+                // 2. Redraw: redraw the character's position
+                repaint();
+
+                delta--;
+            }
+        }
+    }
 
     public void update()
     {
@@ -119,6 +122,7 @@ public class GamePanel extends JPanel implements Runnable
         super.paintComponent(g);
         Graphics2D g2D = (Graphics2D)g;
 
+        levelManager.draw(g2D);
         player.draw(g2D);
 
         g2D.dispose();
