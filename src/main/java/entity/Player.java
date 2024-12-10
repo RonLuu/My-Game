@@ -14,10 +14,16 @@ public class Player extends Entity
     GamePanel gamePanel;
     KeyHandler keyHandler;
 
+    // The position of the camera on the player
+    public final int screenX;
+    public final int screenY;
+
     public Player(GamePanel gamePanel, KeyHandler keyHandler)
     {
         this.gamePanel = gamePanel;
         this.keyHandler = keyHandler;
+        screenX = gamePanel.screenWidth/2 - gamePanel.tileSize/2;
+        screenY = gamePanel.screenHeight/2 - gamePanel.tileSize/2;
         setDefaultValue();
         getPlayerImage();
     }
@@ -25,8 +31,8 @@ public class Player extends Entity
     // Setting the default value from the coordinate and speed
     public void setDefaultValue()
     {
-        this.x = 100;
-        this.y = 100;
+        this.worldX = 100;
+        this.worldY = 100;
         this.speed = 4;
         direction = "down";
     }
@@ -36,21 +42,25 @@ public class Player extends Entity
     {
         try
         {
-            upImage1 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_back_1.png"));
-            upImage2 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_back_2.png"));
-            upImage3 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_back_3.png"));
+            BufferedImage upImage1 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_back_1.png"));
+            BufferedImage upImage2 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_back_2.png"));
+            BufferedImage upImage3 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_back_3.png"));
+            upImages = new BufferedImage[]{upImage1, upImage2, upImage3};
 
-            leftImage1 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_left_1.png"));
-            leftImage2 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_left_2.png"));
-            leftImage3 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_left_3.png"));
+            BufferedImage leftImage1 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_left_1.png"));
+            BufferedImage leftImage2 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_left_2.png"));
+            BufferedImage leftImage3 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_left_3.png"));
+            leftImages = new BufferedImage[]{leftImage1, leftImage2, leftImage3};
 
-            downImage1 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_front_1.png"));
-            downImage2 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_front_2.png"));
-            downImage3 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_front_3.png"));
+            BufferedImage downImage1 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_front_1.png"));
+            BufferedImage downImage2 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_front_2.png"));
+            BufferedImage downImage3 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_front_3.png"));
+            downImages = new BufferedImage[]{downImage1, downImage2, downImage3};
 
-            rightImage1 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_right_1.png"));
-            rightImage2 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_right_2.png"));
-            rightImage3 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_right_3.png"));
+            BufferedImage rightImage1 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_right_1.png"));
+            BufferedImage rightImage2 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_right_2.png"));
+            BufferedImage rightImage3 = ImageIO.read(new File("src\\main\\resources\\Isaac_images\\Isaac_right_3.png"));
+            rightImages = new BufferedImage[]{rightImage1, rightImage2, rightImage3};
         }
         catch(IOException e)
         {
@@ -66,22 +76,22 @@ public class Player extends Entity
         if(keyHandler.upPressed)
         {
             direction = "up";
-            y -= speed;
+            worldY -= speed;
         }
         if(keyHandler.downPressed)
         {
             direction = "down";
-            y += speed;
+            worldY += speed;
         }
         if(keyHandler.leftPressed)
         {
             direction = "left";
-            x -= speed;
+            worldX -= speed;
         }
         if(keyHandler.rightPressed)
         {
             direction = "right";
-            x += speed;
+            worldX += speed;
         }
     }
 
@@ -108,7 +118,6 @@ public class Player extends Entity
             {
                 spriteNum = 1;
             }
-
         }
     }
 
@@ -123,71 +132,23 @@ public class Player extends Entity
     // A function to draw the current state (position and image) of the player
     public void draw(Graphics2D g2D)
     {
-        BufferedImage image = null;
+        BufferedImage image = getImage();
+        // Draw the player with its image and position
+        g2D.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+    }
+
+    public BufferedImage getImage()
+    {
         // Depending on the direction
         // Change the image of the player
-        switch (direction)
+        return switch (direction)
         {
-            case "up":
-                if (spriteNum == 1)
-                {
-                    image = upImage1;
-                }
+            case "up" -> upImages[spriteNum - 1];
+            case "down" -> downImages[spriteNum - 1];
+            case "left" -> leftImages[spriteNum - 1];
+            case "right" -> rightImages[spriteNum - 1];
+            default -> null;
 
-                if (spriteNum == 2)
-                {
-                    image = upImage2;
-                }
-                if (spriteNum == 3)
-                {
-                    image = upImage3;
-                }
-                break;
-            case "down":
-                if (spriteNum == 1)
-                {
-                    image = downImage1;
-                }
-                if (spriteNum == 2)
-                {
-                    image = downImage2;
-                }
-                if (spriteNum == 3)
-                {
-                    image = downImage3;
-                }
-                break;
-            case "left":
-                if (spriteNum == 1)
-                {
-                    image = leftImage1;
-                }
-                if (spriteNum == 2)
-                {
-                    image = leftImage2;
-                }
-                if (spriteNum == 3)
-                {
-                    image = leftImage3;
-                }
-                break;
-            case "right":
-                if (spriteNum == 1)
-                {
-                    image = rightImage1;
-                }
-                if (spriteNum == 2)
-                {
-                    image = rightImage2;
-                }
-                if (spriteNum == 3)
-                {
-                    image = rightImage3;
-                }
-                break;
-        }
-
-        // Draw the player with its image and position
-        g2D.drawImage(image, x, y, gamePanel.tileSize, gamePanel.tileSize, null);
+        };
     }
 }

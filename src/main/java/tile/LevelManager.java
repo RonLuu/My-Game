@@ -16,9 +16,9 @@ public class LevelManager
     {
         this.gamePanel = gamePanel;
         tile = new Tile[10];
-        level = new int[gamePanel.maxScreenRow][gamePanel.maxScreenCol];
+        level = new int[gamePanel.maxWorldRow][gamePanel.maxWorldCol];
         getTileImage();
-        loadLevel();
+        loadLevel("src\\main\\resources\\Levels\\level_world.txt");
     }
 
     public void getTileImage()
@@ -42,17 +42,23 @@ public class LevelManager
 
             tile[5] = new Tile();
             tile[5].image = ImageIO.read(new File("src/main/resources/tile_images/corner.png"));
+
+            tile[6] = new Tile();
+            tile[6].image = ImageIO.read(new File("src/main/resources/tile_images/stone.png"));
+
+            tile[7] = new Tile();
+            tile[7].image = ImageIO.read(new File("src/main/resources/tile_images/jar.png"));
         }
         catch (IOException e)
         {
             throw new RuntimeException(e);
         }
     }
-    public void loadLevel() throws FileNotFoundException
+    public void loadLevel(String mapFile) throws FileNotFoundException
     {
         try
         {
-            File fileLevel = new File("src\\main\\resources\\Levels\\level1.txt");
+            File fileLevel = new File(mapFile);
             BufferedReader br = new BufferedReader(new FileReader(fileLevel));
 
             String line;
@@ -60,13 +66,12 @@ public class LevelManager
             while ((line = br.readLine()) != null)
             {
                 String[] numbers = line.split(" ");
-                for (int col = 0; col < gamePanel.maxScreenCol; col++)
+                for (int col = 0; col < gamePanel.maxWorldCol; col++)
                 {
                     level[row][col] = Integer.parseInt(numbers[col]);
                 }
                 row++;
             }
-
             br.close();
         }
         catch(Exception e)
@@ -77,12 +82,20 @@ public class LevelManager
     }
     public void draw(Graphics2D g2D)
     {
-        for (int i = 0; i < gamePanel.maxScreenRow; i++)
+        for (int worldRow = 0; worldRow < gamePanel.maxScreenRow; worldRow++)
         {
-            for (int j = 0; j < gamePanel.maxScreenCol; j++)
+            for (int worldCol = 0; worldCol < gamePanel.maxScreenCol; worldCol++)
             {
-                g2D.drawImage(tile[level[i][j]].image,
-                        j * gamePanel.tileSize,i * gamePanel.tileSize,
+                int tileNum = level[worldRow][worldCol];
+                int worldX = worldCol * gamePanel.tileSize;
+                int worldY = worldRow * gamePanel.tileSize;
+
+                int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
+                int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
+
+
+                g2D.drawImage(tile[tileNum].image,
+                        screenX,screenY,
                         gamePanel.tileSize, gamePanel.tileSize, null);
             }
         }
