@@ -5,6 +5,7 @@ import org.example.GamePanel;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.*;
+import java.util.Arrays;
 
 public class LevelManager
 {
@@ -15,12 +16,14 @@ public class LevelManager
     public LevelManager(GamePanel gamePanel) throws FileNotFoundException
     {
         this.gamePanel = gamePanel;
+        // There could be up to 10 different tiles in the game
         tile = new Tile[10];
         level = new int[gamePanel.maxWorldRow][gamePanel.maxWorldCol];
         getTileImage();
         loadLevel("src\\main\\resources\\Levels\\level_world.txt");
     }
 
+    // Get all the tile images
     public void getTileImage()
     {
         try
@@ -54,6 +57,8 @@ public class LevelManager
             throw new RuntimeException(e);
         }
     }
+
+    // Load a level given the file path
     public void loadLevel(String mapFile) throws FileNotFoundException
     {
         try
@@ -65,10 +70,10 @@ public class LevelManager
             int row = 0;
             while ((line = br.readLine()) != null)
             {
-                String[] numbers = line.split(" ");
+                String[] rowNumbers = line.split(" ");
                 for (int col = 0; col < gamePanel.maxWorldCol; col++)
                 {
-                    level[row][col] = Integer.parseInt(numbers[col]);
+                    level[row][col] = Integer.parseInt(rowNumbers[col]);
                 }
                 row++;
             }
@@ -80,23 +85,28 @@ public class LevelManager
         }
 
     }
+
     public void draw(Graphics2D g2D)
     {
-        for (int worldRow = 0; worldRow < gamePanel.maxScreenRow; worldRow++)
+        for (int worldRow = 0; worldRow < gamePanel.maxWorldRow; worldRow++)
         {
-            for (int worldCol = 0; worldCol < gamePanel.maxScreenCol; worldCol++)
+            for (int worldCol = 0; worldCol < gamePanel.maxWorldCol; worldCol++)
             {
                 int tileNum = level[worldRow][worldCol];
-                int worldX = worldCol * gamePanel.tileSize;
-                int worldY = worldRow * gamePanel.tileSize;
+                int squareX = worldCol * gamePanel.tileSize;
+                int squareY = worldRow * gamePanel.tileSize;
 
-                int screenX = worldX - gamePanel.player.worldX + gamePanel.player.screenX;
-                int screenY = worldY - gamePanel.player.worldY + gamePanel.player.screenY;
+                int screenX = squareX - gamePanel.player.worldX + gamePanel.player.screenX;
+                int screenY = squareY - gamePanel.player.worldY + gamePanel.player.screenY;
 
-
-                g2D.drawImage(tile[tileNum].image,
-                        screenX,screenY,
-                        gamePanel.tileSize, gamePanel.tileSize, null);
+                if(squareX + gamePanel.tileSize > gamePanel.player.worldX - gamePanel.player.screenX &&
+                    squareX - gamePanel.tileSize < gamePanel.player.worldX + gamePanel.player.screenX &&
+                    squareY + gamePanel.tileSize > gamePanel.player.worldY - gamePanel.player.screenY &&
+                    squareY - gamePanel.tileSize < gamePanel.player.worldY + gamePanel.player.screenY)
+                {
+                    g2D.drawImage(tile[tileNum].image, screenX, screenY,
+                            gamePanel.tileSize, gamePanel.tileSize, null);
+                }
             }
         }
     }

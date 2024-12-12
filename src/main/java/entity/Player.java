@@ -31,8 +31,8 @@ public class Player extends Entity
     // Setting the default value from the coordinate and speed
     public void setDefaultValue()
     {
-        this.worldX = 100;
-        this.worldY = 100;
+        this.worldX = gamePanel.tileSize * gamePanel.maxWorldCol/2;
+        this.worldY = gamePanel.tileSize * gamePanel.maxWorldRow/2;
         this.speed = 4;
         direction = "down";
     }
@@ -128,15 +128,6 @@ public class Player extends Entity
         spriteNumHandler();
     }
 
-
-    // A function to draw the current state (position and image) of the player
-    public void draw(Graphics2D g2D)
-    {
-        BufferedImage image = getImage();
-        // Draw the player with its image and position
-        g2D.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
-    }
-
     public BufferedImage getImage()
     {
         // Depending on the direction
@@ -148,7 +139,15 @@ public class Player extends Entity
             case "left" -> leftImages[spriteNum - 1];
             case "right" -> rightImages[spriteNum - 1];
             default -> null;
-
         };
     }
+
+    // A function to draw the current state (position and image) of the player
+    public void draw(Graphics2D g2D)
+    {
+        BufferedImage image = getImage();
+        // Draw the player with its image and position
+        g2D.drawImage(image, screenX, screenY, gamePanel.tileSize, gamePanel.tileSize, null);
+    }
+
 }
