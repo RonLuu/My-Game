@@ -1,7 +1,7 @@
 package org.example;
 
 import entity.Player;
-import tile.LevelManager;
+import tile.WorldManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,11 +14,11 @@ public class GamePanel extends JPanel implements Runnable
     final int scale = 3;
 
     public final int tileSize = originalTileSize * scale; // 48x48 pixels
-    public final int maxScreenCol = 16; // 16 vertical tiles
-    public final int maxScreenRow = 12; // 12 row tiles
+    public final int maxScreenCol = 16; // 16 vertical tiles for the window
+    public final int maxScreenRow = 12; // 12 row tiles for the window
 
-    public final int screenWidth = maxScreenCol * tileSize; //  48 * 16 = 768 pixels
-    public final int screenHeight = maxScreenRow * tileSize; // 48 * 12 = 576 pixels
+    public final int windowWidth = maxScreenCol * tileSize; //  48 * 16 = 768 pixels wide
+    public final int windowHeight = maxScreenRow * tileSize; // 48 * 12 = 576 pixels long
 
     public final int maxWorldCol = 32; // The number of column tiles in the whole world
     public final int maxWorldRow = 24; // The number of row tiles in the whole world
@@ -27,16 +27,21 @@ public class GamePanel extends JPanel implements Runnable
     public final int worldHeight = maxWorldRow * tileSize; //  48 * 24 = 1152 pixels
 
     Thread gameThread;
+    // A keyHandler to notify the direction
     final KeyHandler keyHandler = new KeyHandler();
+    // A player to play the game
     public Player player = new Player(this, this.keyHandler);
-    LevelManager levelManager = new LevelManager(this);
+    // A world manager to handle and draw the world
+    public WorldManager worldManager = new WorldManager(this);
+    public CollisionChecker collisionChecker = new CollisionChecker(this);
 
     // FPS
     final int FPS = 60;
 
+
     public GamePanel() throws FileNotFoundException
     {
-        this.setPreferredSize(new Dimension(screenWidth, screenHeight));
+        this.setPreferredSize(new Dimension(windowWidth, windowHeight));
         this.setBackground(Color.BLACK);
         this.setDoubleBuffered(true);
         this.addKeyListener(keyHandler);
@@ -50,46 +55,7 @@ public class GamePanel extends JPanel implements Runnable
     }
 
     // A function to update the game in 60 frames per second
-    // First method: sleep
-    // The idea is after the program finishes drawing
-    // it has to wait until the next time to draw
-    // in order to maintain 60 FPS
-//    @Override
-//    public void run()
-//    {
-//        // The interval between each draw
-//        double drawFrameInterval = (double) 1_000_000_000/FPS;
-//
-//        // The next time to draw is the current time added the drawing interval
-//        double nextDrawTime = System.nanoTime() + drawFrameInterval;
-//
-//        while(gameThread != null)
-//        {
-//            // 1. Update: update the character's information
-//            update();
-//
-//            // 2. Redraw: redraw the character's position
-//            repaint();
-//
-//            // Now wait until next draw
-//            try
-//            {
-//                double remainingTime = nextDrawTime - System.nanoTime();
-//                remainingTime /= 1_000_000; // Convert to millisecond
-//                Thread.sleep((long) remainingTime);
-//
-//                nextDrawTime += drawFrameInterval;
-//
-//            }
-//            catch (InterruptedException e)
-//            {
-//                throw new RuntimeException(e);
-//            }
-//        }
-//    }
-
-    // A function to update the game in 60 frames per second
-    // First method: delta
+    // method: delta
     @Override
     public void run()
     {
@@ -129,7 +95,7 @@ public class GamePanel extends JPanel implements Runnable
         super.paintComponent(g);
         Graphics2D g2D = (Graphics2D)g;
 
-        levelManager.draw(g2D);
+        worldManager.draw(g2D);
         player.draw(g2D);
 
         g2D.dispose();

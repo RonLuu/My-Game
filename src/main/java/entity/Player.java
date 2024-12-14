@@ -7,23 +7,28 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Player extends Entity
 {
+    // The game panel of the game
     GamePanel gamePanel;
+    // A keyHandler to notify the direction
     KeyHandler keyHandler;
 
-    // The position of the camera on the player
+    // The position of the player to draw on the window
     public final int screenX;
     public final int screenY;
 
-    public Player(GamePanel gamePanel, KeyHandler keyHandler)
+    public Player(GamePanel gamePanel, KeyHandler keyHandler) throws FileNotFoundException
     {
         this.gamePanel = gamePanel;
         this.keyHandler = keyHandler;
-        screenX = gamePanel.screenWidth/2 - gamePanel.tileSize/2;
-        screenY = gamePanel.screenHeight/2 - gamePanel.tileSize/2;
+        // The player should be drawn at the centre of the window
+        screenX = gamePanel.windowWidth/2 - gamePanel.tileSize/2;
+        screenY = gamePanel.windowHeight/2 - gamePanel.tileSize/2;
+
         setDefaultValue();
         getPlayerImage();
     }
@@ -31,14 +36,18 @@ public class Player extends Entity
     // Setting the default value from the coordinate and speed
     public void setDefaultValue()
     {
-        this.worldX = gamePanel.tileSize * gamePanel.maxWorldCol/2;
-        this.worldY = gamePanel.tileSize * gamePanel.maxWorldRow/2;
+        // The player is placed at the centre of the world
+        this.worldX = (gamePanel.maxWorldCol/2) * gamePanel.tileSize - gamePanel.tileSize/2;
+        this.worldY = (gamePanel.maxWorldRow/2) * gamePanel.tileSize - gamePanel.tileSize/2;
+        // The player's speed is 4
         this.speed = 4;
-        direction = "down";
+        // The default direction is down
+        this.curDirection = this.directions[2];
+        this.solidArea = new Rectangle(8,16,32,32);
     }
 
     // A function to load the player's image
-    public void getPlayerImage()
+    public void getPlayerImage() throws FileNotFoundException
     {
         try
         {
@@ -64,34 +73,41 @@ public class Player extends Entity
         }
         catch(IOException e)
         {
-            e.printStackTrace();
+            throw new FileNotFoundException("Can't find the player's image");
         }
     }
 
     // A function to handle the player's position
     public void movementHandler()
     {
-        // Depending on what key has pressed
-        // Change the direction and position of the character
-        if(keyHandler.upPressed)
+        // If a key has been pressed
+        if(keyHandler.isPressed())
         {
-            direction = "up";
-            worldY -= speed;
-        }
-        if(keyHandler.downPressed)
-        {
-            direction = "down";
-            worldY += speed;
-        }
-        if(keyHandler.leftPressed)
-        {
-            direction = "left";
-            worldX -= speed;
-        }
-        if(keyHandler.rightPressed)
-        {
-            direction = "right";
-            worldX += speed;
+            // Depending on what key has pressed
+            // Change the direction and position of the character
+            curDirection = directions[keyHandler.getDirection()];
+
+            collisionOn = false;
+            gamePanel.collisionChecker.checkTile(this);
+
+            if (!collisionOn)
+            {
+                switch (curDirection)
+                {
+                    case "up":
+                        worldY -= speed;
+                        break;
+                    case "down":
+                        worldY += speed;
+                        break;
+                    case "left":
+                        worldX -= speed;
+                        break;
+                    case "right":
+                        worldX += speed;
+                        break;
+                }
+            }
         }
     }
 
@@ -132,7 +148,7 @@ public class Player extends Entity
     {
         // Depending on the direction
         // Change the image of the player
-        return switch (direction)
+        return switch (curDirection)
         {
             case "up" -> upImages[spriteNum - 1];
             case "down" -> downImages[spriteNum - 1];
