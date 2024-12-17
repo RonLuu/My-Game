@@ -2,7 +2,7 @@ package org.example;
 
 import entity.Player;
 import tile.WorldManager;
-
+import Object.GameObject;
 import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
@@ -34,7 +34,9 @@ public class GamePanel extends JPanel implements Runnable
     // A world manager to handle and draw the world
     public WorldManager worldManager = new WorldManager(this);
     public CollisionChecker collisionChecker = new CollisionChecker(this);
-
+    // Can only DISPLAY 10 objects
+    public GameObject[] gameObjects = new GameObject[10];
+    public ObjectPlacer objectPlacer = new ObjectPlacer(this);
     // FPS
     final int FPS = 60;
 
@@ -48,6 +50,10 @@ public class GamePanel extends JPanel implements Runnable
         this.setFocusable(true);
     }
 
+    public void setupGame() throws FileNotFoundException
+    {
+        objectPlacer.setObject();
+    }
     public void startGameThread()
     {
         gameThread = new Thread(this);
@@ -96,6 +102,13 @@ public class GamePanel extends JPanel implements Runnable
         Graphics2D g2D = (Graphics2D)g;
 
         worldManager.draw(g2D);
+        for (GameObject gameObject : gameObjects)
+        {
+            if (gameObject != null)
+            {
+                gameObject.draw(g2D, this);
+            }
+        }
         player.draw(g2D);
 
         g2D.dispose();

@@ -107,6 +107,7 @@ public class WorldManager
             {
                 // Get the current tile at that row and column
                 int tileNum = world[worldRow][worldCol];
+
                 // Get the x and y position (the top left position) of that tile
                 int topLeftX = worldCol * gamePanel.tileSize;
                 int topLeftY = worldRow * gamePanel.tileSize;
