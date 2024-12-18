@@ -1,7 +1,7 @@
 package org.example;
 
 import entity.Player;
-import tile.WorldManager;
+import tile.TileDrawer;
 import Object.GameObject;
 import javax.swing.*;
 import java.awt.*;
@@ -27,19 +27,20 @@ public class GamePanel extends JPanel implements Runnable
     public final int worldHeight = maxWorldRow * tileSize; //  48 * 24 = 1152 pixels
 
     Thread gameThread;
-    // A keyHandler to notify the direction
+    // A keyHandler to notify which direction button's been pressed
     final KeyHandler keyHandler = new KeyHandler();
     // A player to play the game
     public Player player = new Player(this, this.keyHandler);
     // A world manager to handle and draw the world
-    public WorldManager worldManager = new WorldManager(this);
+    public TileDrawer tileDrawer = new TileDrawer(this);
+    // A collision checker to check all the collision in the game
     public CollisionChecker collisionChecker = new CollisionChecker(this);
-    // Can only DISPLAY 10 objects
+    // An array to DISPLAY only 10 objects in the entire game
     public GameObject[] gameObjects = new GameObject[10];
+    // An object placer to set up all the objects
     public ObjectPlacer objectPlacer = new ObjectPlacer(this);
     // FPS
     final int FPS = 60;
-
 
     public GamePanel() throws FileNotFoundException
     {
@@ -49,11 +50,12 @@ public class GamePanel extends JPanel implements Runnable
         this.addKeyListener(keyHandler);
         this.setFocusable(true);
     }
-
+    // A function to set up all the object in the world
     public void setupGame() throws FileNotFoundException
     {
         objectPlacer.setObject();
     }
+    // A function to start the game
     public void startGameThread()
     {
         gameThread = new Thread(this);
@@ -82,7 +84,6 @@ public class GamePanel extends JPanel implements Runnable
             {
                 // 1. Update: update the character's information
                 update();
-
                 // 2. Redraw: redraw the character's position
                 repaint();
 
@@ -91,17 +92,31 @@ public class GamePanel extends JPanel implements Runnable
         }
     }
 
+    // A function to update everything in the game
     public void update()
     {
+        // Update the player
         player.update();
     }
 
+    // A function to draw everything in the game
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
         Graphics2D g2D = (Graphics2D)g;
 
-        worldManager.draw(g2D);
+        // Draw the world
+        tileDrawer.draw(g2D);
+        // Draw the game objects
+        drawGameObjects(g2D);
+        // Draw the player
+        player.draw(g2D);
+
+        g2D.dispose();
+    }
+
+    public void drawGameObjects(Graphics2D g2D)
+    {
         for (GameObject gameObject : gameObjects)
         {
             if (gameObject != null)
@@ -109,8 +124,5 @@ public class GamePanel extends JPanel implements Runnable
                 gameObject.draw(g2D, this);
             }
         }
-        player.draw(g2D);
-
-        g2D.dispose();
     }
 }

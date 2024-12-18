@@ -3,6 +3,7 @@ import Object.*;
 
 import java.io.FileNotFoundException;
 
+// A class to place object in the world
 public class ObjectPlacer
 {
     GamePanel gamePanel;
@@ -13,18 +14,22 @@ public class ObjectPlacer
 
     public void setObject() throws FileNotFoundException
     {
-        gamePanel.gameObjects[0] = new Key();
-        int squareX = 30;
-        int squareY = 11;
+        GameObject[] gameObjects = gamePanel.gameObjects;
 
-        gamePanel.gameObjects[0].worldX = squareX * gamePanel.tileSize;
-        gamePanel.gameObjects[0].worldY = squareY * gamePanel.tileSize;
+        gameObjects[0] = new Key();
+        setObjectPosition(gameObjects[0], 30, 11);
 
-        gamePanel.gameObjects[1] = new Bomb();
-        squareX = 29;
-        squareY = 5;
+        gameObjects[1] = new Bomb();
+        setObjectPosition(gameObjects[1], 29, 5);
 
-        gamePanel.gameObjects[1].worldX = squareX * gamePanel.tileSize;
-        gamePanel.gameObjects[1].worldY = squareY * gamePanel.tileSize;
+        gameObjects[2] = new Chest();
+        setObjectPosition(gameObjects[2], 30, 2);
+    }
+
+    // A function to set the game object's position
+    private void setObjectPosition(GameObject gameObject, int squareX, int squareY)
+    {
+        gameObject.worldX = squareX * gamePanel.tileSize;
+        gameObject.worldY = squareY * gamePanel.tileSize;
     }
 }
